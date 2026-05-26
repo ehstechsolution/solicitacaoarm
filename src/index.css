@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Premium immersive neon colors matching the design spec */
+  --color-electric-lime: #CCFF00; /* Super bright neon electric lime */
+  --color-vibrant-orange: #FF6B00; /* Premium deep vibrant orange */
+}
+
+/* Custom styling to hide horizontal scrollbars and simulate web app safe areas */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Base Body Styles utilizing theme's aesthetic ambient look */
+body {
+  background-color: #121212;
+  color: #ffffff;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-sans);
+}
+
+/* Prevents automatic zoom-on-focus on iOS devices and ensures color inheritance for crisp text contrast */
+input, select, textarea {
+  font-size: 16px !important;
+  color: inherit;
+}
+
+/* Webkit Autofill override to perfectly match our light/dark design canvas */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Scrollbar styling for a polished scroll experience */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(204, 255, 0, 0.2);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(204, 255, 0, 0.4);
+}
