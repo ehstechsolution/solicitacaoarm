@@ -1,0 +1,122 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global safety net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ID validation helper
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Helper for incoming data payload
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Helper to validate the structured cliente payload on creation
+    function isValidCliente(data) {
+      return data.keys().size() >= 13 && data.keys().size() <= 32 &&
+        // Required Fields
+        data.nomeCompleto is string && data.nomeCompleto.size() >= 2 && data.nomeCompleto.size() <= 256 &&
+        data.cpf is string && data.cpf.size() >= 11 && data.cpf.size() <= 20 &&
+        data.telefone is string && data.telefone.size() >= 10 && data.telefone.size() <= 25 &&
+        data.email is string && data.email.size() >= 5 && data.email.size() <= 256 &&
+        data.fotoCliente is string && data.fotoCliente.size() <= 1024 &&
+        data.tipoCliente == 'Lead frio' &&
+        
+        // Address Validations (At least CEP or logradouro must be present and filled)
+        (data.cep is string && data.cep.size() >= 8 || data.logradouro is string && data.logradouro.size() >= 3) &&
+
+        // Event Fields
+        data.dataEvento is string && data.dataEvento.size() == 10 &&
+        data.horarioInicio is string && data.horarioInicio.size() == 5 &&
+        data.localEvento is string && data.localEvento.size() >= 3 && data.localEvento.size() <= 256 &&
+        data.cepLocal is string && data.cepLocal.size() >= 8 && data.cepLocal.size() <= 10 &&
+        data.pacoteId is string && data.pacoteId.size() <= 64 &&
+        data.pacoteNome is string && data.pacoteNome.size() <= 128 &&
+        data.status == 'proposta_solicitada' &&
+        data.createdAt == request.time &&
+        
+        // Financials (must be non-negative numbers)
+        data.subtotal is number && data.subtotal >= 0 &&
+        data.taxaDeslocamento is number && data.taxaDeslocamento >= 0 &&
+        data.valorTotal is number && data.valorTotal >= 0 &&
+        
+        // Legal Checkboxes (must be booleans)
+        data.aceiteEnergia is bool &&
+        data.aceitePalco is bool &&
+        data.aceiteImagem is bool &&
+        
+        // Optional Fields
+        (!data.keys().hasAny(['numeroAddress']) || (data.numeroAddress is string && data.numeroAddress.size() <= 32)) &&
+        (!data.keys().hasAny(['bairro']) || (data.bairro is string && data.bairro.size() <= 256)) &&
+        (!data.keys().hasAny(['cidade']) || (data.cidade is string && data.cidade.size() <= 256)) &&
+        (!data.keys().hasAny(['estado']) || (data.estado is string && data.estado.size() <= 32)) &&
+        (!data.keys().hasAny(['complemento']) || (data.complemento is string && data.complemento.size() <= 256)) &&
+        (!data.keys().hasAny(['cidadeUfLocal']) || (data.cidadeUfLocal is string && data.cidadeUfLocal.size() <= 256)) &&
+        (!data.keys().hasAny(['pacotePreco']) || data.pacotePreco is number);
+    }
+
+    // Helper to validate the structured orcamento payload on creation
+    function isValidOrcamento(data) {
+      return data.keys().size() >= 13 && data.keys().size() <= 24 &&
+        // Required Fields
+        data.tipoCliente in ['PF', 'PJ'] &&
+        data.nome is string && data.nome.size() >= 2 && data.nome.size() <= 256 &&
+        data.documento is string && data.documento.size() >= 11 && data.documento.size() <= 20 &&
+        data.whatsapp is string && data.whatsapp.size() >= 10 && data.whatsapp.size() <= 25 &&
+        data.cep is string && data.cep.size() >= 8 && data.cep.size() <= 10 &&
+        data.dataEvento is string && data.dataEvento.size() == 10 &&
+        data.horarioInicio is string && data.horarioInicio.size() == 5 &&
+        data.localEvento is string && data.localEvento.size() >= 3 && data.localEvento.size() <= 256 &&
+        data.cepLocal is string && data.cepLocal.size() >= 8 && data.cepLocal.size() <= 10 &&
+        data.pacoteId is string && data.pacoteId.size() <= 64 &&
+        data.pacoteNome is string && data.pacoteNome.size() <= 128 &&
+        data.status == 'proposta_solicitada' &&
+        data.createdAt == request.time &&
+        
+        // Financials (must be non-negative numbers)
+        data.subtotal is number && data.subtotal >= 0 &&
+        data.taxaDeslocamento is number && data.taxaDeslocamento >= 0 &&
+        data.valorTotal is number && data.valorTotal >= 0 &&
+        
+        // Legal Checkboxes (must be booleans)
+        data.aceiteEnergia is bool &&
+        data.aceitePalco is bool &&
+        data.aceiteImagem is bool &&
+        
+        // Optional Fields type & bounds check if they are present in the Map
+        (!data.keys().hasAny(['rgIe']) || (data.rgIe is string && data.rgIe.size() <= 32)) &&
+        (!data.keys().hasAny(['endereco']) || (data.endereco is string && data.endereco.size() <= 512)) &&
+        (!data.keys().hasAny(['cidadeUfLocal']) || (data.cidadeUfLocal is string && data.cidadeUfLocal.size() <= 256)) &&
+        (!data.keys().hasAny(['pacotePreco']) || data.pacotePreco is number) &&
+        (!data.keys().hasAny(['updatedAt']) || data.updatedAt == request.time);
+    }
+
+    // 2. Rules for the "orcamentos" collection
+    match /orcamentos/{orcamentoId} {
+      allow get: if isValidId(orcamentoId);
+      allow list: if false;
+      allow create: if isValidId(orcamentoId) && isValidOrcamento(incoming());
+      allow update, delete: if false;
+    }
+
+    // 3. Rules for the "clientes" collection
+    match /clientes/{clienteId} {
+      allow get: if isValidId(clienteId);
+      allow list: if false; // Block PII leak from query list scraping
+      allow create: if isValidId(clienteId) && isValidCliente(incoming());
+      allow update, delete: if false; // Immutability and high security after placement
+    }
+
+    // 4. Rules for the "config" collection
+    match /config/{configId} {
+      allow read: if isValidId(configId);
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "cliente": {
+      "title": "Cliente",
+      "description": "Um registro estruturado de cliente e orçamentos solicitados no sistema da ARM Som e Luz.",
+      "type": "object",
+      "properties": {
+        "nomeCompleto": { "type": "string", "description": "Nome completo do cliente" },
+        "cpf": { "type": "string", "description": "CPF ou CNPJ com máscara e validação" },
+        "cep": { "type": "string", "description": "CEP do contratante" },
+        "logradouro": { "type": "string", "description": "Rua/logradouro do endereço" },
+        "numeroAddress": { "type": "string", "description": "Número do endereço" },
+        "bairro": { "type": "string", "description": "Bairro do endereço" },
+        "cidade": { "type": "string", "description": "Cidade do endereço" },
+        "estado": { "type": "string", "description": "Estado UF do endereço" },
+        "complemento": { "type": "string", "description": "Complemento do endereço" },
+        "telefone": { "type": "string", "description": "Telefone/WhatsApp de contato para envio" },
+        "email": { "type": "string", "description": "Email para envio de documentos" },
+        "fotoCliente": { "type": "string", "description": "URL da foto de perfil do cliente do Cloudinary" },
+        "tipoCliente": { "type": "string", "enum": ["Lead frio"], "description": "Tipo do cliente para inteligência interna CRM" },
+        "dataEvento": { "type": "string", "format": "date", "description": "Data do Evento" },
+        "horarioInicio": { "type": "string", "description": "Horário de início" },
+        "localEvento": { "type": "string", "description": "Nome do local do evento" },
+        "cepLocal": { "type": "string", "description": "CEP do local do evento" },
+        "cidadeUfLocal": { "type": "string", "description": "Cidade/UF do local" },
+        "pacoteId": { "type": "string", "description": "ID do pacote contratado" },
+        "pacoteNome": { "type": "string", "description": "Nome comercial" },
+        "pacotePreco": { "type": "number", "description": "Preço base do pacote" },
+        "subtotal": { "type": "number", "description": "Subtotal da proposta" },
+        "taxaDeslocamento": { "type": "number", "description": "Taxa de transporte" },
+        "valorTotal": { "type": "number", "description": "Total final" },
+        "aceiteEnergia": { "type": "boolean", "description": "Termo de energia" },
+        "aceitePalco": { "type": "boolean", "description": "Termo de palco" },
+        "aceiteImagem": { "type": "boolean", "description": "Termo de imagem" },
+        "status": { "type": "string", "enum": ["proposta_solicitada"], "description": "Status inicial" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Criação" }
+      },
+      "required": [
+        "nomeCompleto",
+        "cpf",
+        "telefone",
+        "email",
+        "fotoCliente",
+        "tipoCliente",
+        "dataEvento",
+        "horarioInicio",
+        "localEvento",
+        "cepLocal",
+        "pacoteId",
+        "pacoteNome",
+        "status",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/clientes/{id_do_cliente}": {
+      "schema": "cliente",
+      "description": "Banco de dados integrado de leads e orçamentos do sistema"
+    }
+  }
+}

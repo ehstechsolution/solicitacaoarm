@@ -1,0 +1,6 @@
+{
+  "name": "ARM Som e Luz - Orçamentos",
+  "description": "Formulário mobile-first para solicitação de orçamentos de som, luz e efeitos especiais.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
