@@ -12,7 +12,7 @@ interface SucessoModalProps {
 }
 
 export default function SucessoModal({ formData, docId, onRestart }: SucessoModalProps) {
-  const [whatsappNumber, setWhatsappNumber] = useState('5519999999999');
+  const [whatsappNumber, setWhatsappNumber] = useState('5514996971739');
   
   useEffect(() => {
     const fetchEmpresa = async () => {
@@ -20,7 +20,7 @@ export default function SucessoModal({ formData, docId, onRestart }: SucessoModa
         const docRef = doc(db, 'config', 'empresa');
         const snap = await getDoc(docRef);
         if (snap.exists()) {
-            setWhatsappNumber(snap.data().telefone || '5519999999999');
+            setWhatsappNumber(snap.data().telefone || '5514996971739');
         }
       } catch (e) {
         console.error('Erro ao buscar telefone:', e);
@@ -30,9 +30,8 @@ export default function SucessoModal({ formData, docId, onRestart }: SucessoModa
   }, []);
 
   const makeWhatsAppMessage = () => {
-    const textMsg = `Olá Arthur! Fiz um orçamento de Som e Luz no App:
+    const textMsg = `Olá Artur! Fiz um orçamento de Som e Luz no App:
 *Cliente:* ${formData.nomeCompleto}
-*WhatsApp:* ${formData.telefone}
 *Local:* ${formData.localEvento} (${formData.cidadeUfLocal})
 *Data:* ${formData.dataEvento.split('-').reverse().join('/')} às ${formData.horarioInicio}h
 *Pacote Selecionado:* ${formData.pacoteNome}`;
