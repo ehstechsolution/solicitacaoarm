@@ -174,7 +174,7 @@ export default function VisualizacaoProposta({ propostaId }: VisualizacaoPropost
         const docRef = doc(db, 'config', 'empresa');
         const snap = await getDoc(docRef);
         if (snap.exists()) {
-          setWhatsappNumber(snap.data().telefone || '5519999999999');
+          setWhatsappNumber(snap.data().telefone || '5514996971739');
         }
       } catch (e) {
         console.error('Erro ao buscar telefone da empresa:', e);
@@ -316,12 +316,11 @@ export default function VisualizacaoProposta({ propostaId }: VisualizacaoPropost
       setOrcamento(prev => prev ? { ...prev, status: 'aprovado' } : null);
 
       // 4. Exibe mensagem de feedback bem formatada e redireciona ao WhatsApp do Arthur
-      alert("Perfeito! Proposta recebida com sucesso. Fale diretamente com o Arthur pelo WhatsApp para confirmar as datas do contrato.");
+      alert("Perfeito! Proposta recebida com sucesso. Fale diretamente com a ARM pelo WhatsApp para confirmar as datas do contrato.");
       
-      const textMsg = `Olá Arthur! Aprovei o orçamento recebido no App:
+      const textMsg = `Olá ARM! Aprovei o orçamento recebido no App:
 *Proposta ID:* ${propostaId}
 *Cliente:* ${orcamento?.cliente?.nomeCompleto || ''}
-*WhatsApp:* ${orcamento?.cliente?.telefone || ''}
 *Local:* ${orcamento?.localEvento || orcamento?.evento?.local_evento || ''}
 *Data:* ${formatDataEvento(orcamento?.evento?.data_evento || orcamento?.dataEvento)} às ${orcamento?.horarioInicio || ''}h
 *Valor Total:* ${orcamento?.pacote?.valorTotal ? formatCurrency(orcamento.pacote.valorTotal) : ''}
@@ -420,7 +419,7 @@ export default function VisualizacaoProposta({ propostaId }: VisualizacaoPropost
               Este orçamento não foi localizado na base de dados da <strong className="text-zinc-900 font-extrabold">ARM Som e Luz</strong> ou o link de acesso está incorreto.
             </p>
             <p className="text-xs text-zinc-500 leading-relaxed font-sans">
-              Por favor, verifique a URL enviada ou entre em contato direto com o <strong className="text-zinc-900 font-bold">Artur</strong> para suporte.
+              Por favor, verifique a URL enviada ou entre em contato direto com a <strong className="text-zinc-900 font-bold">ARM Som e Luz</strong> para suporte.
             </p>
           </div>
 
