@@ -72,7 +72,7 @@ const ESCOPO_DETALHADO: Record<string, { equipe: string[], equipamentos: string[
   compacto: {
     equipe: [
       '1 Técnico de som e montagem técnica credenciado',
-      'Suporte operacional ativo do Arthur Som/Luz'
+      'Suporte operacional ativo da ARM Som/Luz'
     ],
     equipamentos: [
       '2 Caixas acústicas ativas profissionais (com tripés de metal)',
@@ -142,46 +142,6 @@ export default function VisualizacaoProposta({ propostaId }: VisualizacaoPropost
   const [abrirPacoteModal, setAbrirPacoteModal] = useState(false);
   const [equipamentoParaDetalhesId, setEquipamentoParaDetalhesId] = useState<string | null>(null);
   const [isAprovando, setIsAprovando] = useState(false);
-  const [whatsappNumber, setWhatsappNumber] = useState('5519999999999');
-  const [countdown, setCountdown] = useState(10);
-
-  useEffect(() => {
-    if (loading) return;
-    if (errorStatus || !orcamento || loadedAsProcessed) {
-      const interval = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(interval);
-            let text = "Olá Artur! Acessei o link do meu orçamento da ARM Som e Luz mas ele não foi localizado na base de dados. Pode me ajudar?";
-            if (loadedAsProcessed && orcamento) {
-              const statusLabel = orcamento.status === 'aprovado' ? 'aprovado' : orcamento.status === 'rejeitado' ? 'rejeitado' : 'processado';
-              text = `Olá Artur! Acessei o link do meu orçamento da ARM Som e Luz (ID: ${propostaId}) mas ele consta como já ${statusLabel}. Gostaria de mais informações.`;
-            }
-            const msg = encodeURIComponent(text);
-            window.location.href = `https://wa.me/5514996971739?text=${msg}`;
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [errorStatus, orcamento, loading, loadedAsProcessed, propostaId]);
-
-  useEffect(() => {
-    const fetchEmpresa = async () => {
-      try {
-        const docRef = doc(db, 'config', 'empresa');
-        const snap = await getDoc(docRef);
-        if (snap.exists()) {
-          setWhatsappNumber(snap.data().telefone || '5514996971739');
-        }
-      } catch (e) {
-        console.error('Erro ao buscar telefone da empresa:', e);
-      }
-    };
-    fetchEmpresa();
-  }, []);
 
   useEffect(() => {
     const fetchOrcamento = async () => {
@@ -315,19 +275,8 @@ export default function VisualizacaoProposta({ propostaId }: VisualizacaoPropost
       // 3. Atualiza o estado local do orçamento para refletir a aprovação imediatamente na tela
       setOrcamento(prev => prev ? { ...prev, status: 'aprovado' } : null);
 
-      // 4. Exibe mensagem de feedback bem formatada e redireciona ao WhatsApp do Arthur
-      alert("Perfeito! Proposta recebida com sucesso. Fale diretamente com a ARM pelo WhatsApp para confirmar as datas do contrato.");
-      
-      const textMsg = `Olá ARM! Aprovei o orçamento recebido no App:
-*Proposta ID:* ${propostaId}
-*Cliente:* ${orcamento?.cliente?.nomeCompleto || ''}
-*Local:* ${orcamento?.localEvento || orcamento?.evento?.local_evento || ''}
-*Data:* ${formatDataEvento(orcamento?.evento?.data_evento || orcamento?.dataEvento)} às ${orcamento?.horarioInicio || ''}h
-*Valor Total:* ${orcamento?.pacote?.valorTotal ? formatCurrency(orcamento.pacote.valorTotal) : ''}
-*Pacote Selecionado:* ${orcamento?.pacote?.pacoteNome || ''}`;
-
-      const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(textMsg)}`;
-      window.open(url, '_blank', 'noreferrer');
+      // 4. Exibe mensagem de feedback bem formatada
+      alert("Perfeito! Proposta recebida e aprovada com sucesso.");
 
     } catch (err) {
       console.error('Erro na aprovação da proposta:', err);
@@ -362,8 +311,6 @@ export default function VisualizacaoProposta({ propostaId }: VisualizacaoPropost
 
   if (loadedAsProcessed && orcamento) {
     const statusLabel = orcamento.status === 'aprovado' ? 'aprovado' : orcamento.status === 'rejeitado' ? 'rejeitado' : 'processado';
-    const text = `Olá Artur! Acessei o link do meu orçamento da ARM Som e Luz (ID: ${propostaId}) mas ele consta como já ${statusLabel}. Gostaria de mais informações.`;
-    const waUrl = `https://wa.me/5514996971739?text=${encodeURIComponent(text)}`;
 
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center p-4 text-[#1A1A1A]">
@@ -382,29 +329,12 @@ export default function VisualizacaoProposta({ propostaId }: VisualizacaoPropost
               Em breve alguém da equipe <strong className="text-zinc-900 font-bold">ARM Som e Luz</strong> entrará em contato com você via WhatsApp para alinhar os próximos passos.
             </p>
           </div>
-
-          <div className="pt-2">
-            <a
-              href={waUrl}
-              className="w-full py-3 bg-[#B1D334] hover:brightness-105 text-zinc-950 font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
-            >
-              <Send className="w-3.5 h-3.5 text-zinc-950" />
-              Falar no WhatsApp
-            </a>
-          </div>
-
-          <div className="text-[10px] text-zinc-400 font-medium">
-            Redirecionando automaticamente em <span className="font-bold text-[#F47B20] font-mono">{countdown}s</span>...
-          </div>
         </div>
       </div>
     );
   }
 
   if (errorStatus || !orcamento) {
-    const defaultMsg = encodeURIComponent("Olá Artur! Acessei o link do meu orçamento da ARM Som e Luz mas ele não foi localizado na base de dados. Pode me ajudar?");
-    const waUrl = `https://wa.me/5514996971739?text=${defaultMsg}`;
-
     return (
       <div className="min-h-screen bg-[#FAFAFA] flex flex-col items-center justify-center p-4 text-[#1A1A1A]">
         <div className="w-full max-w-[480px] bg-white rounded-[26px] shadow-xl p-8 text-center border-t-4 border-[#F47B20] space-y-6">
@@ -419,22 +349,8 @@ export default function VisualizacaoProposta({ propostaId }: VisualizacaoPropost
               Este orçamento não foi localizado na base de dados da <strong className="text-zinc-900 font-extrabold">ARM Som e Luz</strong> ou o link de acesso está incorreto.
             </p>
             <p className="text-xs text-zinc-500 leading-relaxed font-sans">
-              Por favor, verifique a URL enviada ou entre em contato direto com a <strong className="text-zinc-900 font-bold">ARM Som e Luz</strong> para suporte.
+              Por favor, verifique a URL enviada ou entre em contato direto com a <strong className="text-zinc-900 font-bold">ARM</strong> para suporte.
             </p>
-          </div>
-
-          <div className="pt-2">
-            <a
-              href={waUrl}
-              className="w-full py-3 bg-[#B1D334] hover:brightness-105 text-zinc-950 font-extrabold text-[11px] uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
-            >
-              <Send className="w-3.5 h-3.5 text-zinc-950" />
-              Falar no WhatsApp
-            </a>
-          </div>
-
-          <div className="text-[10px] text-zinc-400 font-medium">
-            Redirecionando automaticamente em <span className="font-bold text-[#F47B20] font-mono">{countdown}s</span>...
           </div>
         </div>
       </div>

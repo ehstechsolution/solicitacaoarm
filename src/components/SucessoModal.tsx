@@ -1,9 +1,5 @@
 import { OrcamentoFormData } from '../types';
-import { formatCurrency } from '../utils';
-import { CheckCircle2, PhoneCall } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { CheckCircle2 } from 'lucide-react';
 
 interface SucessoModalProps {
   formData: OrcamentoFormData;
@@ -12,38 +8,6 @@ interface SucessoModalProps {
 }
 
 export default function SucessoModal({ formData, docId, onRestart }: SucessoModalProps) {
-  const [whatsappNumber, setWhatsappNumber] = useState('5514996971739');
-  
-  useEffect(() => {
-    const fetchEmpresa = async () => {
-      try {
-        const docRef = doc(db, 'config', 'empresa');
-        const snap = await getDoc(docRef);
-        if (snap.exists()) {
-            setWhatsappNumber(snap.data().telefone || '5514996971739');
-        }
-      } catch (e) {
-        console.error('Erro ao buscar telefone:', e);
-      }
-    };
-    fetchEmpresa();
-  }, []);
-
-  const makeWhatsAppMessage = () => {
-    const textMsg = `Olá Artur! Fiz um orçamento de Som e Luz no App:
-*Cliente:* ${formData.nomeCompleto}
-*Local:* ${formData.localEvento} (${formData.cidadeUfLocal})
-*Data:* ${formData.dataEvento.split('-').reverse().join('/')} às ${formData.horarioInicio}h
-*Pacote Selecionado:* ${formData.pacoteNome}`;
-
-    return encodeURIComponent(textMsg);
-  };
-
-  const handleWhatsAppRedirect = () => {
-    const url = `https://wa.me/${whatsappNumber}?text=${makeWhatsAppMessage()}`;
-    window.open(url, '_blank', 'noreferrer');
-  };
-
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center p-6 bg-black/60 dark:bg-black/80 backdrop-blur-md animate-fade-in">
       <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-900 rounded-3xl p-6 w-full max-w-sm text-center shadow-2xl dark:shadow-electric-lime/10 space-y-6">
@@ -66,15 +30,14 @@ export default function SucessoModal({ formData, docId, onRestart }: SucessoModa
           </p>
         </div>
 
-        {/* Action Button: WhatsApp */}
+        {/* Action Button: Novo Orçamento */}
         <div className="space-y-2 pt-2">
           <button
-            onClick={handleWhatsAppRedirect}
-            className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold text-sm rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
-            id="btn-whatsapp-redirect"
+            onClick={onRestart}
+            className="w-full py-4 bg-[#B1D334] hover:bg-[#B1D334]/90 text-zinc-950 font-extrabold text-sm rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shadow-lg shadow-[#B1D334]/25"
+            id="btn-novo-orcamento"
           >
-            <PhoneCall className="w-5 h-5 animate-pulse" />
-            VOLTAR AO WHATSAPP
+            FAZER NOVO ORÇAMENTO
           </button>
         </div>
 
