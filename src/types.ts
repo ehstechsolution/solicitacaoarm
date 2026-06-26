@@ -38,6 +38,7 @@ export interface Pacote {
   equipamentos: PacoteEquipamento[];
   destaque?: boolean;
   isPersonalizado?: boolean;
+  foto_capa_url?: string;
 }
 
 export interface OrcamentoFormData {
