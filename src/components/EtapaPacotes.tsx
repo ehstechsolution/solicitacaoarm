@@ -90,7 +90,7 @@ export default function EtapaPacotes({
               role="button"
               tabIndex={0}
               onClick={() => handleSelectPackage(pacote)}
-              className={`w-full text-left p-5 rounded-2xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between border cursor-pointer select-none ${
+              className={`w-full text-left p-0 rounded-2xl transition-all duration-300 relative overflow-hidden flex flex-col justify-between border cursor-pointer select-none ${
                 isSelected
                   ? isCustom
                     ? 'border-vibrant-orange bg-white dark:bg-zinc-950 text-zinc-950 dark:text-white ring-2 ring-vibrant-orange/40 shadow-xl shadow-vibrant-orange/15'
@@ -101,66 +101,83 @@ export default function EtapaPacotes({
               }`}
               id={`pacote-card-${pacote.pacote_id}`}
             >
+              {/* Cover Image */}
+              {pacote.foto_capa_url && (
+                <div className="relative w-full h-40 sm:h-48 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                  <img
+                    src={pacote.foto_capa_url}
+                    alt={pacote.titulo}
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.03]"
+                    referrerPolicy="no-referrer"
+                  />
+                  {/* Subtle top gradient shadow to ensure absolute readability of custom badges */}
+                  <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/50 via-black/10 to-transparent" />
+                </div>
+              )}
+
               {/* Highlight Badge */}
               {pacote.destaque && (
-                <div className="absolute top-0 right-0 bg-electric-lime text-black font-mono font-black text-[9px] uppercase tracking-wider px-3.5 py-1 rounded-bl-xl shadow-md">
+                <div className="absolute top-2 right-2 z-10 bg-electric-lime text-black font-mono font-black text-[9px] uppercase tracking-wider px-3 py-1 rounded-lg shadow-md">
                   Mais Vendido 🔥
                 </div>
               )}
 
               {isCustom && (
-                <div className="absolute top-0 right-0 bg-vibrant-orange text-white font-mono font-black text-[9px] uppercase tracking-wider px-3.5 py-1 rounded-bl-xl shadow-md flex items-center gap-1">
+                <div className="absolute top-2 right-2 z-10 bg-vibrant-orange text-white font-mono font-black text-[9px] uppercase tracking-wider px-3 py-1 rounded-lg shadow-md flex items-center gap-1">
                   <Settings className="w-2.5 h-2.5" /> Exclusivo
                 </div>
               )}
 
-              <div className="pr-12">
-                <h3 className="font-display font-extrabold text-base md:text-lg mb-1.5 flex items-center gap-1 text-zinc-900 dark:text-white">
-                  {pacote.titulo}
-                  {isSelected && (
-                    <span className={isCustom ? 'text-vibrant-orange' : 'text-electric-lime'}>
-                      <Check className="w-5 h-5 stroke-[3]" />
-                    </span>
-                  )}
-                </h3>
-                <p className="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed mb-4">
-                  {pacote.descricao}
-                </p>
-              </div>
-
-              {/* Lower info block (Price display or custom messages) */}
-              <div className="border-t border-zinc-200 dark:border-zinc-800/80 pt-3.5 flex flex-col gap-3 w-full">
-                {!isCustom && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setPacoteParaDetalhes(pacote);
-                    }}
-                    className="w-full text-xs flex items-center justify-center gap-2 py-3 bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700 font-bold uppercase tracking-wider rounded-lg transition-colors"
-                  >
-                    <Info className="w-4 h-4" /> Ver detalhes do pacote
-                  </button>
-                )}
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
-                    Investimento
-                  </span>
-                  <span className={`font-display font-black text-lg ${isCustom ? 'text-vibrant-orange' : 'text-electric-lime'}`}>
-                    {isCustom ? 'SOB CONSULTA' : formatCurrency(pacote.preco_venda)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Special interactive prompt for customized items */}
-              {isCustom && isSelected && (
-                <div className="mt-4 p-4 rounded-xl border border-vibrant-orange/30 bg-vibrant-orange/5 text-xs text-zinc-800 dark:text-white leading-relaxed animate-fade-in flex gap-3">
-                  <Info className="w-5 h-5 text-vibrant-orange flex-shrink-0 mt-0.5" />
-                  <p>
-                    <strong>Perfeito! Você quer algo exclusivo.</strong> Ao finalizar, seus dados irão direto para o <strong>Arthur</strong> para desenharem juntos o projeto dos seus sonhos.
+              {/* Content Container */}
+              <div className="p-5 flex-1 flex flex-col justify-between">
+                <div className="pr-12">
+                  <h3 className="font-display font-extrabold text-base md:text-lg mb-1.5 flex items-center gap-1 text-zinc-900 dark:text-white">
+                    {pacote.titulo}
+                    {isSelected && (
+                      <span className={isCustom ? 'text-vibrant-orange' : 'text-electric-lime'}>
+                        <Check className="w-5 h-5 stroke-[3]" />
+                      </span>
+                    )}
+                  </h3>
+                  <p className="text-xs text-zinc-550 dark:text-zinc-400 leading-relaxed mb-4">
+                    {pacote.descricao}
                   </p>
                 </div>
-              )}
+
+                {/* Lower info block (Price display or custom messages) */}
+                <div className="border-t border-zinc-200 dark:border-zinc-800/80 pt-3.5 flex flex-col gap-3 w-full">
+                  {!isCustom && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPacoteParaDetalhes(pacote);
+                      }}
+                      className="w-full text-xs flex items-center justify-center gap-2 py-3 bg-zinc-200 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-300 dark:hover:bg-zinc-700 font-bold uppercase tracking-wider rounded-lg transition-colors"
+                    >
+                      <Info className="w-4 h-4" /> Ver detalhes do pacote
+                    </button>
+                  )}
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+                      Investimento
+                    </span>
+                    <span className={`font-display font-black text-lg ${isCustom ? 'text-vibrant-orange' : 'text-electric-lime'}`}>
+                      {isCustom ? 'SOB CONSULTA' : formatCurrency(pacote.preco_venda)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Special interactive prompt for customized items */}
+                {isCustom && isSelected && (
+                  <div className="mt-4 p-4 rounded-xl border border-vibrant-orange/30 bg-vibrant-orange/5 text-xs text-zinc-800 dark:text-white leading-relaxed animate-fade-in flex gap-3">
+                    <Info className="w-5 h-5 text-vibrant-orange flex-shrink-0 mt-0.5" />
+                    <p>
+                      <strong>Perfeito! Você quer algo exclusivo.</strong> Ao finalizar, seus dados irão direto para o <strong>Arthur</strong> para desenharem juntos o projeto dos seus sonhos.
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
