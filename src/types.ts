@@ -39,6 +39,7 @@ export interface Pacote {
   destaque?: boolean;
   isPersonalizado?: boolean;
   foto_capa_url?: string;
+  fotos?: string[];
 }
 
 export interface OrcamentoFormData {
